@@ -192,7 +192,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media') 
 MEDIA_URL = '/media/'
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # SOCIAL_AUTH_FACEBOOK_KEY = '354164902590834'
 # SOCIAL_AUTH_FACEBOOK_SECRET = '10c5fa9a56e3b09889f9e52c57722167'
