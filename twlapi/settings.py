@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'p3wo*7(6#+$lc05)f51w**^!3zf#ydniwliorejx^@ajzx_+l_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -47,14 +47,11 @@ INSTALLED_APPS = [
     # 'social_django',
     'taggit_serializer',
     'taggit',
-    'django_filters',
-    'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     # 'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
@@ -137,19 +135,16 @@ WSGI_APPLICATION = 'twlapi.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
-    # {
-    #     # 'ENGINE': 'django.db.backends.sqlite3',
-    #     # 'NAME': BASE_DIR / 'db.sqlite3',
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'twlapi2', 
-    #     'USER': 'postgres', 
-    #     'PASSWORD': 'P.shashi123',
-    #     'HOST': '127.0.0.1', 
-    #     'PORT': '5432',
-    # }
+    'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'twlapi2', 
+        'USER': 'postgres', 
+        'PASSWORD': 'P.shashi123',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
+    }
 }
 
 
@@ -192,7 +187,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media') 
 MEDIA_URL = '/media/'
-# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # SOCIAL_AUTH_FACEBOOK_KEY = '354164902590834'
 # SOCIAL_AUTH_FACEBOOK_SECRET = '10c5fa9a56e3b09889f9e52c57722167'
