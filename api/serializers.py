@@ -7,17 +7,17 @@ from taggit_serializer.serializers import (TagListSerializerField,
 class userModelSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['uid','username','email','photourl','is_superuser']
+        fields=['uid','username','email','photourl','is_superuser','last_login','date_joined']
 
-# class tagsmodelserializer(serializers.ModelSerializer):
-#     class Meta:
-#         model=tagsmodel
-#         fields="__all__"
+
+
+
 
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model=TopicModel
         fields="__all__"
+        
 
 
 class PlaceSerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class SubCommentSerializer(serializers.ModelSerializer):
         return obj.scUser.username
     
     def get_scphoto(self,obj):
-        return obj.scUser.photourl
+        return obj.scUser.photourl.url
 
 class CommentsSerializer(serializers.ModelSerializer):
     replies=serializers.SerializerMethodField()
@@ -45,7 +45,7 @@ class CommentsSerializer(serializers.ModelSerializer):
     c_photourl=serializers.SerializerMethodField()
     class Meta:
         model=CommentsModel
-        fields=['id','comment','postname','c_userid','c_name','c_photourl','replies']
+        fields=['id','comment','postname','c_userid','c_name','c_photourl','date','likes','replies']
 
     def get_replies(self,obj):
         return SubCommentSerializer(obj.subcomments,many=True).data
@@ -54,9 +54,14 @@ class CommentsSerializer(serializers.ModelSerializer):
         return obj.c_userid.username
 
     def get_c_photourl(self,obj):
-        return obj.c_userid.photourl
+        return obj.c_userid.photourl.url
 
-class PostSerializer(TaggitSerializer,serializers.ModelSerializer):
+class ThumbnailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Thumbnails
+        fields='__all__'
+
+class PostSerializer(serializers.ModelSerializer):
     url=serializers.HyperlinkedIdentityField(
         view_name="post-detail",
         # lookup_field="title_slug"
@@ -65,15 +70,15 @@ class PostSerializer(TaggitSerializer,serializers.ModelSerializer):
     comment=serializers.SerializerMethodField()
     topic_name=serializers.SerializerMethodField()
     place_name=serializers.SerializerMethodField()
-    tags=TagListSerializerField()
-    likes=serializers.SerializerMethodField()
+    likes=userModelSerializer(many=True)
+    thumbnailimage=serializers.ImageField(max_length=None, use_url=True)
     class Meta:
         model=PostModel
-        fields=['id','title','overview','content','thumbnail','likes','tags','topic_name','topic','place_name','place','author','authorname','title_slug','url','userphoto','date','comment']
-    
+        fields=['id','title','overview','content','likes','thumbnailimage','topic_name','topic','place_name','place','author','authorname','title_slug','url','userphoto','date','comment']
+        
     def get_userphoto(self,obj):
         try:
-           userphoto=obj.author.photourl
+           userphoto=obj.author.photourl.url
         except:
             userphoto=None
         return userphoto
@@ -82,7 +87,6 @@ class PostSerializer(TaggitSerializer,serializers.ModelSerializer):
 
     def get_place_name(self,obj):
         return obj.place.Pname
-    def get_likes(self,obj):
-        return obj.likes.count()
     def get_comment(self,obj):
         return CommentsSerializer(obj.comments,many=True).data
+    

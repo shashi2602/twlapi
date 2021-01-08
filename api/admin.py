@@ -7,4 +7,6 @@ admin.site.register(TopicModel)
 admin.site.register(PostModel)
 admin.site.register(CommentsModel)
 admin.site.register(SubCommentModel)
+admin.site.register(Thumbnails)
+
 

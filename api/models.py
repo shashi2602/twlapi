@@ -60,20 +60,18 @@ class PlaceModel(models.Model):
     @property
     def placepost(self):
         return PostModel.objects.filter(place=self)
-
 class PostModel(models.Model):
-    title=models.TextField(null=False,default="")
+    title=models.CharField(null=False,max_length=1000)
     content=models.TextField(null=False)
     overview=models.TextField(null=False)
-    thumbnail=models.ImageField(upload_to="thumbnail/",blank=True)
     topic=models.ForeignKey(TopicModel,null=True,on_delete=models.PROTECT)
-    tags=TaggableManager()
     place=models.ForeignKey(PlaceModel,null=True,on_delete=models.PROTECT)
     author=models.ForeignKey(User,on_delete=models.CASCADE)
     authorname=models.CharField(null=False,max_length=1000,default="")
-    likes=models.ManyToManyField(User,blank=True,related_name="post_like")
+    likes=models.ManyToManyField(User,blank=True,related_name="likes")
     title_slug=models.SlugField(null=True,blank=True)
     date=models.DateTimeField(auto_now=True)
+    thumbnailimage=models.ImageField(upload_to="thumbnails",blank=False,default="")
 
     def save(self, *args, **kwargs):
         if self.title_slug==None:
@@ -90,9 +88,14 @@ class PostModel(models.Model):
     @property
     def comments(self):
         instance=self
-        qs=CommentsModel.objects.filter(postname=self)
+        qs=CommentsModel.objects.filter(postname=self).order_by('-date')
         return qs
     
+    
+    # @property
+    # def getthumbnail(self):
+    #     gt=Thumbnails.objects.filter(postid=self)
+    #     return gt
     @property
     def topics(self):
         return TopicModel
@@ -103,6 +106,8 @@ class CommentsModel(models.Model):
     comment=models.TextField()
     postname=models.ForeignKey(PostModel,on_delete=models.CASCADE)
     c_userid=models.ForeignKey(User,on_delete=models.CASCADE)
+    date=models.DateTimeField(auto_now=True)
+    likes=models.ManyToManyField(User,blank=True,related_name="comment_like")
 
     @property
     def subcomments(self):
@@ -116,3 +121,11 @@ class SubCommentModel(models.Model):
     subComment=models.TextField()
     comment=models.ForeignKey(CommentsModel,on_delete=models.CASCADE)
     scUser=models.ForeignKey(User,on_delete=models.CASCADE)
+    date=models.DateTimeField(auto_now=True)
+    likes=models.ManyToManyField(User,blank=True,related_name="sub_comment_like")
+class Thumbnails(models.Model):
+    postid=models.ForeignKey(PostModel,on_delete=models.CASCADE)
+    image=models.ImageField(upload_to="thumbnails",blank=False)
+
+    def __str__(self):
+        return self.postid.title

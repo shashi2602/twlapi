@@ -9,6 +9,8 @@ from authapi.models import User
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.views.generic import DetailView
+from rest_framework.parsers import FormParser,MultiPartParser
+
 
 class getusers(generics.ListCreateAPIView):
     queryset=User.objects.all()
@@ -43,7 +45,7 @@ class postcreateapi(generics.ListCreateAPIView):
     serializer_class=PostSerializer
     # authentication_classes=(TokenAuthentication)
     permission_classes=[IsAuthenticated]
-    
+    parser_classes=[MultiPartParser,FormParser]
 
 class postupdatedeleteapi(generics.RetrieveUpdateDestroyAPIView):
     queryset=PostModel.objects.all()
@@ -53,11 +55,18 @@ class postupdatedeleteapi(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
       data= queryset=PostModel.objects.filter(author=self.request.user.uid)
       return data
-
+class thumbnailcreateapi(generics.ListCreateAPIView):
+    queryset=Thumbnails.objects.all()
+    serializer_class=ThumbnailsSerializer
+    # permission_classes=[IsAuthenticated]
 class placecreateapi(generics.ListCreateAPIView):
     queryset=PlaceModel.objects.all()
     serializer_class=PlaceSerializer
     permission_classes=[IsAuthenticated]
+class getplacesapi(generics.ListAPIView):
+    queryset=PlaceModel.objects.all()
+    serializer_class=PlaceSerializer
+    # permission_classes=[IsAuthenticated]
 
 class placeupdatedeleteapi(generics.RetrieveUpdateDestroyAPIView):
     queryset=PlaceModel.objects.all()
@@ -65,10 +74,14 @@ class placeupdatedeleteapi(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=[IsAuthenticated]
 
 class commentscreateapi(generics.ListCreateAPIView):
-    queryset=CommentsModel.objects.all()
+    queryset=CommentsModel.objects.all().order_by('-date')
     serializer_class=CommentsSerializer
     permission_classes=[IsAuthenticated]
-  
+class commentsretrive(generics.ListAPIView):
+    queryset=CommentsModel.objects.all().order_by('-date')
+    serializer_class=CommentsSerializer
+    # permission_classes=[IsAuthenticated]
+    lookup_field='postname'
 
 class commentsupdatedeleteapi(generics.RetrieveUpdateDestroyAPIView):
     queryset=CommentsModel.objects.all()
@@ -82,6 +95,12 @@ class subcommentcreateapi(generics.ListCreateAPIView):
     queryset=SubCommentModel.objects.all()
     serializer_class=SubCommentSerializer
     permission_classes=[IsAuthenticated]
+
+class subcommentretrive(generics.RetrieveAPIView):
+    queryset=SubCommentModel.objects.all()
+    serializer_class=SubCommentSerializer
+    permission_classes=[IsAuthenticated]
+
 
 class subcommentupdatedeleteapi(generics.RetrieveUpdateDestroyAPIView):
     queryset=SubCommentModel.objects.all()
@@ -109,12 +128,17 @@ class GetUserPosts(generics.ListAPIView):
 class GetSinglePost(generics.RetrieveAPIView):
     queryset=PostModel.objects.all()
     serializer_class=PostSerializer
-    
+
+class GetThumbnailOfPost(generics.RetrieveAPIView):
+    queryset=Thumbnails.objects.all()
+    serializer_class=ThumbnailsSerializer
+    # def get_queryset(self):
+    #     return Thumbnails.objects.filter(postid__id=self.kwargs['postid'])
 class GetAllPlacesposts(generics.ListAPIView):
     queryset=PostModel.objects.all()
     serializer_class=PostSerializer
     def get_queryset(self):
-        return PostModel.objects.filter(place__Pname=self.kwargs['place'])
+        return PostModel.objects.filter(place__pname_slug=self.kwargs['place'])
 
 class GetAllTopicPosts(generics.ListAPIView):
     queryset=PostModel.objects.all()
@@ -143,3 +167,5 @@ class AddLikeToPost(APIView):
             'liked':liked
         }
         return Response(data)
+
+

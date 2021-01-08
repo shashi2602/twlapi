@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'p3wo*7(6#+$lc05)f51w**^!3zf#ydniwliorejx^@ajzx_+l_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
@@ -72,7 +72,9 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+  
+
 }
 
 
@@ -91,11 +93,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 AUTH_USER_MODEL='authapi.User'
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'auth/users/reset_password_confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'auth/users/reset_username_confirm{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'LOGIN_FIELD':'email',
-    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_ACTIVATION_EMAIL': True,
+    'DOMAIN_URL':'localhost:4200',
     'SERIALIZERS': {
          'user_create': 'authapi.serializers.usercreateserli',
          'user':'authapi.serializers.usercreateserli',
@@ -195,10 +198,14 @@ STATIC_URL = '/static/'
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media') 
 MEDIA_URL = '/media/'
 
-# SOCIAL_AUTH_FACEBOOK_KEY = '354164902590834'
-# SOCIAL_AUTH_FACEBOOK_SECRET = '10c5fa9a56e3b09889f9e52c57722167'
-# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-#   'locale': 'ru_RU',
-#   'fields': 'id, name, email, age_range'
-# }
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static')
+# ]
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'shashi.ppk@gmail.com'
+EMAIL_HOST_PASSWORD = "ldxzambivtghrqzv"
