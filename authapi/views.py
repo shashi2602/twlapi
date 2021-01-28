@@ -20,6 +20,12 @@ class Usereditapi(generics.RetrieveUpdateAPIView):
 class AboutUserApi(generics.RetrieveAPIView):
     queryset=User.objects.all()
     serializer_class=AboutUserserilz
+
+class GetCurrentUser(generics.RetrieveAPIView):
+    queryset=User.objects.all()
+    serializer_class=AboutUserserilz
+    
+
 class AddFollowToUser(APIView):
     permission_classes=[IsAuthenticated]
     def get(self,request,uid=None,format=None):
@@ -28,12 +34,12 @@ class AddFollowToUser(APIView):
         updated=False
         followed=False
         if user_:
-            if user_ in obj.followers.all():
+            if user_ in obj.following.all():
                 followed=False
-                obj.followers.remove(user_)
+                obj.following.remove(user_)
             else:
                 followed=True
-                obj.followers.add(user_)
+                obj.following.add(user_)
             updated=True
         data={
             'updated':updated,

@@ -4,13 +4,13 @@ from authapi.models import User
 from django.utils.text import slugify
 from taggit.managers import TaggableManager
 
-class Usermodel(models.Model):
-    id=models.CharField(max_length=500,primary_key=True)
-    email=models.CharField(max_length=500)
-    photoURL=models.CharField(max_length=100)
-    displayName=models.CharField(max_length=500)
-    def __str__(self):
-        return self.displayName
+# class Usermodel(models.Model):
+#     id=models.CharField(max_length=500,primary_key=True)
+#     email=models.CharField(max_length=500)
+#     photoURL=models.CharField(max_length=100)
+#     displayName=models.CharField(max_length=500)
+#     def __str__(self):
+#         return self.displayName
 
 
 
@@ -61,7 +61,7 @@ class PlaceModel(models.Model):
     def placepost(self):
         return PostModel.objects.filter(place=self)
 class PostModel(models.Model):
-    title=models.CharField(null=False,max_length=1000)
+    title=models.TextField()
     content=models.TextField(null=False)
     overview=models.TextField(null=False)
     topic=models.ForeignKey(TopicModel,null=True,on_delete=models.PROTECT)
@@ -69,10 +69,10 @@ class PostModel(models.Model):
     author=models.ForeignKey(User,on_delete=models.CASCADE)
     authorname=models.CharField(null=False,max_length=1000,default="")
     likes=models.ManyToManyField(User,blank=True,related_name="likes")
-    title_slug=models.SlugField(null=True,blank=True)
-    date=models.DateTimeField(auto_now=True)
+    title_slug=models.SlugField(null=True,blank=True,max_length=1000)
+    date=models.DateTimeField(auto_now_add=True)
+    updated_date=models.DateTimeField(auto_now=True)
     thumbnailimage=models.ImageField(upload_to="thumbnails",blank=False,default="")
-
     def save(self, *args, **kwargs):
         if self.title_slug==None:
             slug1 = slugify(self.title)

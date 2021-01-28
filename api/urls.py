@@ -16,6 +16,7 @@ urlpatterns = [
     path("post/<int:pk>",GetSinglePost.as_view(),name="post-detail"),
     path("post/<int:pid>/like",AddLikeToPost.as_view(),name="post-like"),
     path("post/thumbnail/<int:pk>",GetThumbnailOfPost.as_view()),
+    path("post/<int:pid>/fav",ArticlesFavoriteAPIView.as_view()),
     #place operation urls
     path("place",placecreateapi.as_view()),#right
     path("place/all",getplacesapi.as_view()),#right
@@ -31,4 +32,6 @@ urlpatterns = [
     path("user/topic/<int:pk>",topicupdatedeleteapi.as_view()),
     path("user/post/<int:pk>",postupdatedeleteapi.as_view()),
     path('user/post',GetUserPosts.as_view()),
+    path("author/posts/<slug:userid>",GetAuthorPosts.as_view()),
+
 ]

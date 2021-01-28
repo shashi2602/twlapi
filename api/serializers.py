@@ -71,11 +71,13 @@ class PostSerializer(serializers.ModelSerializer):
     topic_name=serializers.SerializerMethodField()
     place_name=serializers.SerializerMethodField()
     likes=userModelSerializer(many=True)
+    likes_count=serializers.SerializerMethodField()
     thumbnailimage=serializers.ImageField(max_length=None, use_url=True)
+    is_liked=serializers.SerializerMethodField()
     class Meta:
         model=PostModel
-        fields=['id','title','overview','content','likes','thumbnailimage','topic_name','topic','place_name','place','author','authorname','title_slug','url','userphoto','date','comment']
-        
+        fields=['id','title','overview','content','likes','likes_count','thumbnailimage','topic_name','topic','place_name','place','author','authorname','title_slug','url','userphoto','date','updated_date','comment','is_liked']
+        ordering=['-date','-updated_date']
     def get_userphoto(self,obj):
         try:
            userphoto=obj.author.photourl.url
@@ -89,4 +91,8 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.place.Pname
     def get_comment(self,obj):
         return CommentsSerializer(obj.comments,many=True).data
-    
+    def get_is_liked(self,instance):
+        request=self.context.get('request');
+        return PostModel.objects.filter(likes=request.user).exists()
+    def get_likes_count(self,obj):
+        return obj.likes.count()

@@ -2,7 +2,7 @@ from django.shortcuts import render,get_object_or_404
 from rest_framework.response import Response
 from .serializers import *
 from .models import *
-from rest_framework import generics
+from rest_framework import generics,mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from authapi.models import User
@@ -124,7 +124,12 @@ class GetUserPosts(generics.ListAPIView):
     def get_queryset(self):
       data=  queryset=PostModel.objects.filter(author=self.request.user.uid)
       return data
-
+class GetAuthorPosts(generics.ListAPIView):
+    queryset=PostModel
+    serializer_class=PostSerializer
+    def get_queryset(self):
+        data=  queryset=PostModel.objects.filter(author=self.kwargs['userid'])
+        return data
 class GetSinglePost(generics.RetrieveAPIView):
     queryset=PostModel.objects.all()
     serializer_class=PostSerializer
@@ -169,3 +174,36 @@ class AddLikeToPost(APIView):
         return Response(data)
 
 
+class ArticlesFavoriteAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PostSerializer
+
+    def delete(self, request, pid=None):
+        profile = self.request.user
+        serializer_context = {'request': request}
+
+        try:
+            article = PostModel.objects.get(id=pid)
+        except PostModel.DoesNotExist:
+            raise NotFound('An article with this slug was not found.')
+
+        profile.unfavorite(article)
+
+        serializer = self.serializer_class(article, context=serializer_context)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pid=None):
+        profile = self.request.user
+        serializer_context = {'request': request}
+
+        try:
+            article = PostModel.objects.get(id=pid)
+        except PostModel.DoesNotExist:
+            raise NotFound('An article with this slug was not found.')
+
+        profile.addfavorite(article)
+
+        serializer = self.serializer_class(article, context=serializer_context)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

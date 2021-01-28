@@ -7,7 +7,7 @@ urlpatterns=[
     path('',include('djoser.urls.jwt')),
     path("user/<slug:uid>/follow",AddFollowToUser.as_view()),
     path("user/<slug:pk>",AboutUserApi.as_view()),
-
+    path("user/me",GetCurrentUser.as_view()),
 
     # path('',include('social_django.urls'))
 ]
